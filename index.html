@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body class="container">
+
+    <nav>
+        <div class="nav-wrapper">
+            <a href="#" class="brand-logo center">JEE By Dev Goyal</a>
+
+        </div>
+    </nav>
+
+
+
+    <div class="preloader-wrapper big active" id="Loader">
+        <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="maintalbe"></div>
+
+
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!--JavaScript at end of body for optimized loading-->
+
+    <!--JavaScript at end of body for optimized loading-->
+    <script>
+        document.getElementById("maintalbe").style = "display:none";
+
+        var res = ``;
+        var maintable = document.getElementById("maintalbe");
+
+        maintable.innerHTML = res;
+
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                var obj = JSON.parse(this.responseText);
+
+                obj.forEach((batch) => {
+                    var subjectHtml = ``;
+
+                    batch.subjects.forEach((subject) => {
+                        subjectHtml = subjectHtml + `
+                        <tr>
+                    <td>
+                        ${subject.name}
+                    </td>
+
+                    <td><a class="waves-effect waves-light btn" href="./subject.html?sub=${subject.name}&Range=${subject.range}">Open This</a></td>
+
+                      </tr>
+                        `;
+                    });
+
+                    res = res +  `
+                    <H3>${batch.batchName}</H3>
+                        <table>
+                      ${subjectHtml}
+                        </table>
+                        <br><hr> 
+                    `;
+                });
+
+
+                maintable.innerHTML = res;
+                document.getElementById("maintalbe").style = "";
+
+                document.getElementById("Loader").style = "display:none";
+
+                if (localStorage.getItem("scroll" + window.location.href) !== null) {
+                    window.scrollTo(0, localStorage.getItem("scroll" + window.location.href));
+
+                }
+            }
+        };
+
+
+        xhttp.open("GET", "https://pwsheets.herokuapp.com/getAllBatches");
+        // xhttp.open("POST", "http://localhost:3000/getByRangeDataSheet1PW?");
+        // xhttp.send(formData);
+        xhttp.send();
+
+        window.localStorage.setItem("oldURI", window.location.href);
+
+    </script>
+
+
+</body>
+
+</html>

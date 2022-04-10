@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <script src="https://cdn.plyr.io/3.6.8/plyr.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js"></script>
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.6.8/plyr.css" />
+
+
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body class="container">
+
+  <nav>
+    <div class="nav-wrapper">
+      <a href="./index.html" class="brand-logo center">JEE By Dev Goyal</a>
+
+    </div>
+  </nav>
+
+  <H3 id="heading">Lec Name.</H3>
+
+  <div onclick="location.replace(`${window.localStorage.getItem('oldURI')}`);"
+    style="margin:5px;font-size: 16px;width:120px;padding:12px;border-radius: 50px;background: rgb(253, 244, 192); box-shadow: rgb(190 190 100) 20px 20px 60px, rgb(255 255 255) -20px -20px 60px;display:none"
+    id="gobackbtn">
+    <i class="material-icons">
+      arrow_back
+    </i> Go Back
+  </div>
+
+
+
+  <div
+    style="margin:2px;font-size: 16px;width:220px;padding:12px;border-radius: 50px;background: rgb(253, 244, 192); box-shadow: rgb(190 190 100) 20px 20px 60px, rgb(255 255 255) -20px -20px 60px;display:flex"
+    class="leccopybtn">
+    <i class="material-icons">
+      content_copy
+    </i>Copy Lecture Link
+  </div>
+  <br>
+
+  <video autoplay controls playsinline>
+    <source src="" />
+  </video>
+  <br><br>
+  <script>
+    var url = new URL(window.location.href);
+    var sub = url.searchParams.get("name");
+    var leclink = url.searchParams.get("url");
+
+    document.getElementById("heading").innerText = sub;
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+      var e = document.querySelector("video"),
+        n = e.getElementsByTagName("source")[0].src,
+        ni = e.getElementsByTagName("source")[0],
+        o = {};
+      var lec = leclink;
+
+      if (lec.includes('bitgravity') || lec.includes('cloudfront')) {
+        n = `https://phpstreamer.tanishagoyal.repl.co/multim3u8.php?url=${leclink}`;
+      } else {
+        n = leclink;
+      }
+
+      if (Hls.isSupported() && lec.includes("m3u8")) {
+        ni.type = "application/x-mpegURL";
+        var config = { maxMaxBufferLength: 100 };
+        const t = new Hls(config);
+        t.loadSource(n),
+          t.on(Hls.Events.MANIFEST_PARSED, function (n, l) {
+            const s = t.levels.map((e) => e.height);
+            o.quality = {
+              //default: s[0],
+              options: s,
+              forced: !0,
+              onChange: (e) =>
+                (function (e) {
+                  window.hls.levels.forEach((n, o) => {
+                    n.height === e && (window.hls.currentLevel = o);
+                  });
+                })(e),
+            };
+            new Plyr(e, o);
+          }),
+          t.attachMedia(e),
+          (window.hls = t);
+      } else {
+        ni.src = leclink;
+        new Plyr(e);
+      }
+    });
+
+
+
+    //progress saving functionality
+    const videolol = document.querySelector('video');
+
+    if (document.body.contains(document.querySelector('video'))) {
+      const oldDurr = window.localStorage.getItem(leclink);
+      if (oldDurr) {
+        videolol.currentTime = oldDurr;
+      }
+
+      videolol.ontimeupdate = (event) => {
+        console.log('The currentVideo Time =>', videolol.currentTime);
+        if (videolol.currentTime && videolol.currentTime !== 0) {
+          window.localStorage.setItem(leclink, videolol.currentTime);
+        }
+      };
+    }
+      //progress saving functionality
+
+
+
+
+  </script>
+
+
+
+
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+
+  <!--JavaScript at end of body for optimized loading-->
+
+  <script>
+    if (window.localStorage.getItem("oldURI")) {
+
+      document.getElementById("gobackbtn").style.display = "flex";
+    }
+
+
+    function fallbackCopyTextToClipboard(text) {
+      var textArea = document.createElement("textarea");
+      textArea.value = text;
+
+      // Avoid scrolling to bottom
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.position = "fixed";
+
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Fallback: Copying text command was ' + msg);
+      } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+      }
+
+      document.body.removeChild(textArea);
+    }
+    function copyTextToClipboard(text) {
+      if (!navigator.clipboard) {
+        fallbackCopyTextToClipboard(text);
+        return;
+      }
+      navigator.clipboard.writeText(text).then(function () {
+        console.log('Async: Copying to clipboard was successful!');
+      }, function (err) {
+        console.error('Async: Could not copy text: ', err);
+      });
+    }
+
+    var copyLecBtn = document.querySelector('.leccopybtn');
+
+    copyLecBtn.addEventListener('click', function (event) {
+      copyTextToClipboard(leclink);
+    });
+
+
+  </script>
+</body>
+
+</html>

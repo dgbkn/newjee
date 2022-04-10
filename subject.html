@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body class="container">
+
+    <nav>
+        <div class="nav-wrapper">
+            <a href="./index.html" class="brand-logo center">JEE By Dev Goyal</a>
+
+        </div>
+    </nav>
+
+    <H3 id="heading">Subject Name.</H3>
+
+    <div class="preloader-wrapper big active" id="Loader">
+        <div class="spinner-layer spinner-blue-only">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+                <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <table id="maintable">
+        <tr>
+            <th>Name</th>
+            <th>Lecture</th>
+            <th>NOTES</th>
+            <th>DPP</th>
+        </tr>
+
+    </table>
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!--JavaScript at end of body for optimized loading-->
+    <script>
+        document.getElementById("maintable").style = "display:none";
+
+
+        var url = new URL(window.location.href);
+        var sub = url.searchParams.get("sub");
+
+        document.getElementById("heading").innerText = sub;
+
+        var res = `
+  <tr>
+    <th>Name</th>
+    <th>Lecture</th>
+    <th>NOTES</th>
+    <th>DPP</th>
+  </tr>
+            `;
+        var maintable = document.getElementById("maintable");
+
+        maintable.innerHTML = res;
+
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                var obj = JSON.parse(this.responseText);
+
+                obj.forEach((i) => {
+                    console.log(i);
+
+
+
+
+
+
+                    if ("lecture" in i) {
+                        var first = `
+      <td><a class="waves-effect waves-light btn" href="./lecture.html?name=${encodeURIComponent(i.name)}&url=${encodeURIComponent(i.lecture)}">Lecture</a></td>
+      `
+                    } else {
+                        first = "";
+                    }
+
+
+                    if ("notes" in i) {
+                        var second = `
+      <td><a class="waves-effect waves-light btn" href="./pdf.html?name=${encodeURIComponent(i.name + ' NOTES')}&url=${encodeURIComponent(i.notes)}">Notes</a></td>
+      `
+                    } else {
+                        second = "";
+                    }
+
+
+                    if ("dpp" in i) {
+                        var third = `
+      <td><a class="waves-effect waves-light btn" href="./pdf.html?name=${encodeURIComponent(i.name + ' DPP')}&url=${encodeURIComponent(i.dpp)}">DPP</a></td>
+      `
+                    } else {
+                        third = "";
+                    }
+
+
+
+
+
+                    res = res + `
+           <tr>
+    <td>${i.name}</td>
+
+    ${first}
+    ${second}
+    ${third}
+
+        </tr>
+                `;
+
+
+
+                });
+
+
+                maintable.innerHTML = res;
+                document.getElementById("maintable").style = "";
+
+                document.getElementById("Loader").style = "display:none";
+
+                if (localStorage.getItem("scroll" + window.location.href) !== null) {
+                    window.scrollTo(0, localStorage.getItem("scroll" + window.location.href));
+
+                }
+            }
+        };
+
+
+        // var formData = new FormData();
+
+        // formData.append("apiCommand", "getRange");
+        // formData.append("range", url.searchParams.get("Range"));
+        // xhttp.open("POST", "https://script.google.com/macros/s/AKfycbw3d9a2yPeranlrNVHdhV8rccxcgUzr5ogw8hSv4iVPsp8UB17gEUVkED34YOyRBXbj/exec");
+        // // xhttp.open("POST", "http://localhost:3000/getByRangeDataSheet1PW?");
+        // xhttp.send(formData);
+
+
+        xhttp.open("GET", "https://pwsheets.herokuapp.com/getSubjectData?range=" + url.searchParams.get("Range"));
+        // xhttp.open("POST", "http://localhost:3000/getByRangeDataSheet1PW?");
+        // xhttp.send(formData);
+        xhttp.send();
+
+        window.localStorage.setItem("oldURI", window.location.href);
+
+    </script>
+
+
+    <script>
+        // self executing function here
+        (function () {
+            // your page initialization code here
+            // the DOM will be available here
+            if (localStorage.getItem("scroll" + window.location.href) !== null) {
+                window.scrollTo(0, localStorage.getItem("scroll" + window.location.href));
+
+            }
+
+
+            // When scrolling happens....
+            document.addEventListener('scroll', function (e) {
+                // Set a cookie that holds the scroll position.
+                localStorage.setItem("scroll" + window.location.href, window.scrollY);
+
+            });
+
+        })();
+    </script>
+
+
+</body>
+
+</html>
